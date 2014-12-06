@@ -1,0 +1,25 @@
+(DELAYFILE
+ (SDFVERSION "IEEE 1497 4.0")
+ (DATE "2014-11-01T00:05:59Z")
+ (DESIGN "PWM_LED_Fade")
+ (VENDOR "Cypress Semiconductor")
+ (PROGRAM "cydsfit")
+ (VERSION "No Version Information Found")
+ (DIVIDER .)
+ (TIMESCALE 1 ns)
+ (CELL
+  (CELLTYPE "PWM_LED_Fade")
+  (INSTANCE *)
+  (DELAY
+   (ABSOLUTE
+    (INTERCONNECT ClockBlock.hfclk TC_ISR.clock (0.000:0.000:0.000))
+    (INTERCONNECT LED_GREEN\(0\).pad_out LED_GREEN\(0\).pad_in (0.000:0.000:0.000))
+    (INTERCONNECT ClockBlock.ff_div_8 \\PWM\:cy_m0s8_tcpwm_1\\.clock (0.000:0.000:0.000))
+    (INTERCONNECT \\PWM\:cy_m0s8_tcpwm_1\\.interrupt TC_ISR.interrupt (1.000:1.000:1.000))
+    (INTERCONNECT \\PWM\:cy_m0s8_tcpwm_1\\.line_out LED_GREEN\(0\).pin_input (5.695:5.695:5.695))
+    (INTERCONNECT LED_GREEN\(0\).pad_out LED_GREEN\(0\)_PAD (0.000:0.000:0.000))
+    (INTERCONNECT LED_GREEN\(0\)_PAD LED_GREEN\(0\).pad_in (0.000:0.000:0.000))
+   )
+  )
+ )
+)
