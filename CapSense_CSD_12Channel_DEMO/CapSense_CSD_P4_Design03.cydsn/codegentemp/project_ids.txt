@@ -1,0 +1,5 @@
+C:\Users\gsgill\Documents\PSoC Creator\CapSense_CSD_P4_Design03\CapSense_CSD_P4_Design03.cydsn\CapSense_CSD_P4_Design03.cyprj|a68d3795-3739-412d-9102-b8812471d750
+D:\Program Files (x86)\Cypress\PSoC Creator\3.1\PSoC Creator\psoc\content\default\CyAnnotationLibrary\CyAnnotationLibrary.cylib\CyAnnotationLibrary.cyprj|e130c119-d3a1-4ac9-953f-d49a9f6d0ffa
+D:\Program Files (x86)\Cypress\PSoC Creator\3.1\PSoC Creator\psoc\content\cycomponentlibraryupdates\CyComponentLibraryUpdates.cylib\CyComponentLibraryUpdates.cyprj|3cff2897-1976-4211-80b3-50368dbbecd1
+D:\Program Files (x86)\Cypress\PSoC Creator\3.1\PSoC Creator\psoc\content\cycomponentlibrary\CyComponentLibrary.cylib\CyComponentLibrary.cyprj|f71cec59-4a9d-41d6-8d13-96388d6e8fb3
+D:\Program Files (x86)\Cypress\PSoC Creator\3.1\PSoC Creator\psoc\content\cyprimitives\CyPrimitives.cylib\CyPrimitives.cyprj|e75cacd8-336a-479d-9fc5-ee7e2c5e5efe

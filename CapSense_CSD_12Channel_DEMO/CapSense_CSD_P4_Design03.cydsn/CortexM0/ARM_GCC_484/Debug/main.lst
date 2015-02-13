@@ -1,0 +1,668 @@
+ARM GAS  C:\Users\gsgill\AppData\Local\Temp\ccTK1PDq.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.comm	curPos,2,2
+  18              		.comm	oldPos,2,2
+  19              		.section	.text.main,"ax",%progbits
+  20              		.align	2
+  21              		.global	main
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	main, %function
+  25              	main:
+  26              	.LFB33:
+  27              		.file 1 ".\\main.c"
+   1:.\main.c      **** /*******************************************************************************
+   2:.\main.c      **** * File Name: main.c
+   3:.\main.c      **** *
+   4:.\main.c      **** * Version: 1.20
+   5:.\main.c      **** *
+   6:.\main.c      **** * Description:
+   7:.\main.c      **** *  The project explains the usage of CapSense CSD component. The 2 buttons and
+   8:.\main.c      **** *  linear sliders are used as sensing elements. LED displays buttons active 
+   9:.\main.c      **** *  state and slider position is shown on LCD.
+  10:.\main.c      **** *
+  11:.\main.c      **** ********************************************************************************
+  12:.\main.c      **** * Copyright 2013, Cypress Semiconductor Corporation. All rights reserved.
+  13:.\main.c      **** * This software is owned by Cypress Semiconductor Corporation and is protected
+  14:.\main.c      **** * by and subject to worldwide patent and copyright laws and treaties.
+  15:.\main.c      **** * Therefore, you may use this software only as provided in the license agreement
+  16:.\main.c      **** * accompanying the software package from which you obtained this software.
+  17:.\main.c      **** * CYPRESS AND ITS SUPPLIERS MAKE NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+  18:.\main.c      **** * WITH REGARD TO THIS SOFTWARE, INCLUDING, BUT NOT LIMITED TO, NONINFRINGEMENT,
+  19:.\main.c      **** * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+  20:.\main.c      **** *******************************************************************************/
+  21:.\main.c      **** 
+  22:.\main.c      **** #include <device.h>
+  23:.\main.c      **** 
+  24:.\main.c      **** /* CapSense Slider resoluton is set to 127 (7 bits).
+  25:.\main.c      **** *  Since PWM has 16 bit resolution, slider position value should be shifted left
+  26:.\main.c      **** *  by 9 bits.
+  27:.\main.c      **** */
+  28:.\main.c      **** #define SLIDER_POS_TO_COMPARE_SHIFT    (9u)
+  29:.\main.c      **** 
+  30:.\main.c      **** uint16 curPos, oldPos;
+ARM GAS  C:\Users\gsgill\AppData\Local\Temp\ccTK1PDq.s 			page 2
+
+
+  31:.\main.c      **** 
+  32:.\main.c      **** /*******************************************************************************
+  33:.\main.c      **** * Function Name: main
+  34:.\main.c      **** ********************************************************************************
+  35:.\main.c      **** * Summary:
+  36:.\main.c      **** *  Main function performs following functions:
+  37:.\main.c      **** *   1. Enable global interrupts.
+  38:.\main.c      **** *   2. Initialize CapSense CSD and Start the sensor scanning loop.
+  39:.\main.c      **** *   3. Process scanning results and display it on with LEDs.
+  40:.\main.c      **** *
+  41:.\main.c      **** * Parameters:
+  42:.\main.c      **** *  None
+  43:.\main.c      **** *
+  44:.\main.c      **** * Return:
+  45:.\main.c      **** *  None
+  46:.\main.c      **** *
+  47:.\main.c      **** *******************************************************************************/
+  48:.\main.c      **** int main()
+  49:.\main.c      **** {
+  28              		.loc 1 49 0
+  29              		.cfi_startproc
+  30 0000 80B5     		push	{r7, lr}
+  31              		.cfi_def_cfa_offset 8
+  32              		.cfi_offset 7, -8
+  33              		.cfi_offset 14, -4
+  34 0002 00AF     		add	r7, sp, #0
+  35              		.cfi_def_cfa_register 7
+  50:.\main.c      ****     /* Enable global interrupts */
+  51:.\main.c      ****     CyGlobalIntEnable;
+  36              		.loc 1 51 0
+  37              	@ 51 ".\main.c" 1
+  38 0004 62B6     		CPSIE   i
+  39              	@ 0 "" 2
+  52:.\main.c      ****     
+  53:.\main.c      ****     /* Start PWM and CapSense components */
+  54:.\main.c      ****     LED_CONTROL_Start();
+  40              		.loc 1 54 0
+  41              		.code	16
+  42 0006 FFF7FEFF 		bl	LED_CONTROL_Start
+  55:.\main.c      **** 
+  56:.\main.c      ****     CapSense_CSD_Start();	
+  43              		.loc 1 56 0
+  44 000a FFF7FEFF 		bl	CapSense_CSD_Start
+  57:.\main.c      **** 
+  58:.\main.c      ****     /* Initialize baselines */ 
+  59:.\main.c      ****     CapSense_CSD_InitializeAllBaselines();
+  45              		.loc 1 59 0
+  46 000e FFF7FEFF 		bl	CapSense_CSD_InitializeAllBaselines
+  47              	.L3:
+  60:.\main.c      ****     
+  61:.\main.c      ****     while(1u)
+  62:.\main.c      ****     {
+  63:.\main.c      ****         Pin_1_Write(1);
+  48              		.loc 1 63 0
+  49 0012 0120     		mov	r0, #1
+  50 0014 FFF7FEFF 		bl	Pin_1_Write
+  64:.\main.c      ****         /* Update all baselines */
+ARM GAS  C:\Users\gsgill\AppData\Local\Temp\ccTK1PDq.s 			page 3
+
+
+  65:.\main.c      ****         CapSense_CSD_UpdateEnabledBaselines();
+  51              		.loc 1 65 0
+  52 0018 FFF7FEFF 		bl	CapSense_CSD_UpdateEnabledBaselines
+  66:.\main.c      ****         
+  67:.\main.c      ****    		/* Start scanning all enabled sensors */
+  68:.\main.c      ****     	CapSense_CSD_ScanEnabledWidgets();
+  53              		.loc 1 68 0
+  54 001c FFF7FEFF 		bl	CapSense_CSD_ScanEnabledWidgets
+  69:.\main.c      ****     
+  70:.\main.c      ****         /* Wait for scanning to complete */
+  71:.\main.c      **** 		while(CapSense_CSD_IsBusy() != 0)
+  55              		.loc 1 71 0
+  56 0020 C046     		mov	r8, r8
+  57              	.L2:
+  58              		.loc 1 71 0 is_stmt 0 discriminator 1
+  59 0022 FFF7FEFF 		bl	CapSense_CSD_IsBusy
+  60 0026 031C     		mov	r3, r0
+  61 0028 002B     		cmp	r3, #0
+  62 002a FAD1     		bne	.L2
+  72:.\main.c      **** 		{
+  73:.\main.c      **** 			/* Loop until condition true */
+  74:.\main.c      **** 		}
+  75:.\main.c      **** 
+  76:.\main.c      **** 		/* Display CapSense state using LEDs */
+  77:.\main.c      ****         CapSense_DisplayState();
+  63              		.loc 1 77 0 is_stmt 1
+  64 002c FFF7FEFF 		bl	CapSense_DisplayState
+  78:.\main.c      ****     }
+  65              		.loc 1 78 0
+  66 0030 EFE7     		b	.L3
+  67              		.cfi_endproc
+  68              	.LFE33:
+  69              		.size	main, .-main
+  70 0032 C046     		.section	.text.CapSense_DisplayState,"ax",%progbits
+  71              		.align	2
+  72              		.global	CapSense_DisplayState
+  73              		.code	16
+  74              		.thumb_func
+  75              		.type	CapSense_DisplayState, %function
+  76              	CapSense_DisplayState:
+  77              	.LFB34:
+  79:.\main.c      **** }
+  80:.\main.c      **** 
+  81:.\main.c      **** /*******************************************************************************
+  82:.\main.c      **** * Function Name: CapSense_DisplayState
+  83:.\main.c      **** ********************************************************************************
+  84:.\main.c      **** * Summary:
+  85:.\main.c      **** *  Changes LEDs brightness by changing the duty cycle of PWM signals.
+  86:.\main.c      **** *
+  87:.\main.c      **** * Parameters:
+  88:.\main.c      **** *  None
+  89:.\main.c      **** *
+  90:.\main.c      **** * Return:
+  91:.\main.c      **** *  None
+  92:.\main.c      **** *
+  93:.\main.c      **** *******************************************************************************/
+  94:.\main.c      **** void CapSense_DisplayState(void)
+ARM GAS  C:\Users\gsgill\AppData\Local\Temp\ccTK1PDq.s 			page 4
+
+
+  95:.\main.c      **** {
+  78              		.loc 1 95 0
+  79              		.cfi_startproc
+  80 0000 80B5     		push	{r7, lr}
+  81              		.cfi_def_cfa_offset 8
+  82              		.cfi_offset 7, -8
+  83              		.cfi_offset 14, -4
+  84 0002 00AF     		add	r7, sp, #0
+  85              		.cfi_def_cfa_register 7
+  96:.\main.c      ****     /* Find Slider Position */
+  97:.\main.c      ****     curPos = CapSense_CSD_GetCentroidPos(CapSense_CSD_LINEARSLIDER0__LS);    
+  86              		.loc 1 97 0
+  87 0004 0020     		mov	r0, #0
+  88 0006 FFF7FEFF 		bl	CapSense_CSD_GetCentroidPos
+  89 000a 031C     		mov	r3, r0
+  90 000c 1A1C     		mov	r2, r3
+  91 000e 104B     		ldr	r3, .L7
+  92 0010 1A80     		strh	r2, [r3]
+  98:.\main.c      ****     
+  99:.\main.c      ****     /* Reset position */
+ 100:.\main.c      ****     if(curPos == 0xFFFFu)
+  93              		.loc 1 100 0
+  94 0012 0F4B     		ldr	r3, .L7
+  95 0014 1A88     		ldrh	r2, [r3]
+  96 0016 0F4B     		ldr	r3, .L7+4
+  97 0018 9A42     		cmp	r2, r3
+  98 001a 02D1     		bne	.L5
+ 101:.\main.c      ****     {
+ 102:.\main.c      ****         curPos = 0u;
+  99              		.loc 1 102 0
+ 100 001c 0C4B     		ldr	r3, .L7
+ 101 001e 0022     		mov	r2, #0
+ 102 0020 1A80     		strh	r2, [r3]
+ 103              	.L5:
+ 103:.\main.c      ****     }
+ 104:.\main.c      ****                 
+ 105:.\main.c      ****     /* Move bargraph */
+ 106:.\main.c      ****     if (curPos != oldPos)
+ 104              		.loc 1 106 0
+ 105 0022 0B4B     		ldr	r3, .L7
+ 106 0024 1A88     		ldrh	r2, [r3]
+ 107 0026 0C4B     		ldr	r3, .L7+8
+ 108 0028 1B88     		ldrh	r3, [r3]
+ 109 002a 9A42     		cmp	r2, r3
+ 110 002c 0DD0     		beq	.L4
+ 107:.\main.c      ****     {
+ 108:.\main.c      ****         oldPos = curPos;
+ 111              		.loc 1 108 0
+ 112 002e 084B     		ldr	r3, .L7
+ 113 0030 1A88     		ldrh	r2, [r3]
+ 114 0032 094B     		ldr	r3, .L7+8
+ 115 0034 1A80     		strh	r2, [r3]
+ 109:.\main.c      ****         /* Display Slider bargraph */
+ 110:.\main.c      ****         if (curPos != 0u)
+ 116              		.loc 1 110 0
+ 117 0036 064B     		ldr	r3, .L7
+ 118 0038 1B88     		ldrh	r3, [r3]
+ARM GAS  C:\Users\gsgill\AppData\Local\Temp\ccTK1PDq.s 			page 5
+
+
+ 119 003a 002B     		cmp	r3, #0
+ 120 003c 05D0     		beq	.L4
+ 111:.\main.c      ****         {
+ 112:.\main.c      ****             LED_CONTROL_WriteCompare((uint32)curPos << SLIDER_POS_TO_COMPARE_SHIFT);
+ 121              		.loc 1 112 0
+ 122 003e 044B     		ldr	r3, .L7
+ 123 0040 1B88     		ldrh	r3, [r3]
+ 124 0042 5B02     		lsl	r3, r3, #9
+ 125 0044 181C     		mov	r0, r3
+ 126 0046 FFF7FEFF 		bl	LED_CONTROL_WriteCompare
+ 127              	.L4:
+ 113:.\main.c      ****         }        
+ 114:.\main.c      ****     }
+ 115:.\main.c      **** }
+ 128              		.loc 1 115 0
+ 129 004a BD46     		mov	sp, r7
+ 130              		@ sp needed
+ 131 004c 80BD     		pop	{r7, pc}
+ 132              	.L8:
+ 133 004e C046     		.align	2
+ 134              	.L7:
+ 135 0050 00000000 		.word	curPos
+ 136 0054 FFFF0000 		.word	65535
+ 137 0058 00000000 		.word	oldPos
+ 138              		.cfi_endproc
+ 139              	.LFE34:
+ 140              		.size	CapSense_DisplayState, .-CapSense_DisplayState
+ 141              		.text
+ 142              	.Letext0:
+ 143              		.file 2 ".\\Generated_Source\\PSoC4/cytypes.h"
+ 144              		.section	.debug_info,"",%progbits
+ 145              	.Ldebug_info0:
+ 146 0000 E2000000 		.4byte	0xe2
+ 147 0004 0400     		.2byte	0x4
+ 148 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 149 000a 04       		.byte	0x4
+ 150 000b 01       		.uleb128 0x1
+ 151 000c BD000000 		.4byte	.LASF19
+ 152 0010 01       		.byte	0x1
+ 153 0011 8B010000 		.4byte	.LASF20
+ 154 0015 5E000000 		.4byte	.LASF21
+ 155 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 156 001d 00000000 		.4byte	0
+ 157 0021 00000000 		.4byte	.Ldebug_line0
+ 158 0025 02       		.uleb128 0x2
+ 159 0026 01       		.byte	0x1
+ 160 0027 06       		.byte	0x6
+ 161 0028 79010000 		.4byte	.LASF0
+ 162 002c 02       		.uleb128 0x2
+ 163 002d 01       		.byte	0x1
+ 164 002e 08       		.byte	0x8
+ 165 002f 39010000 		.4byte	.LASF1
+ 166 0033 02       		.uleb128 0x2
+ 167 0034 02       		.byte	0x2
+ 168 0035 05       		.byte	0x5
+ 169 0036 55010000 		.4byte	.LASF2
+ 170 003a 02       		.uleb128 0x2
+ARM GAS  C:\Users\gsgill\AppData\Local\Temp\ccTK1PDq.s 			page 6
+
+
+ 171 003b 02       		.byte	0x2
+ 172 003c 07       		.byte	0x7
+ 173 003d 66010000 		.4byte	.LASF3
+ 174 0041 02       		.uleb128 0x2
+ 175 0042 04       		.byte	0x4
+ 176 0043 05       		.byte	0x5
+ 177 0044 4C010000 		.4byte	.LASF4
+ 178 0048 02       		.uleb128 0x2
+ 179 0049 04       		.byte	0x4
+ 180 004a 07       		.byte	0x7
+ 181 004b 35000000 		.4byte	.LASF5
+ 182 004f 02       		.uleb128 0x2
+ 183 0050 08       		.byte	0x8
+ 184 0051 05       		.byte	0x5
+ 185 0052 00000000 		.4byte	.LASF6
+ 186 0056 02       		.uleb128 0x2
+ 187 0057 08       		.byte	0x8
+ 188 0058 07       		.byte	0x7
+ 189 0059 47000000 		.4byte	.LASF7
+ 190 005d 03       		.uleb128 0x3
+ 191 005e 04       		.byte	0x4
+ 192 005f 05       		.byte	0x5
+ 193 0060 696E7400 		.ascii	"int\000"
+ 194 0064 02       		.uleb128 0x2
+ 195 0065 04       		.byte	0x4
+ 196 0066 07       		.byte	0x7
+ 197 0067 15000000 		.4byte	.LASF8
+ 198 006b 04       		.uleb128 0x4
+ 199 006c 94010000 		.4byte	.LASF9
+ 200 0070 02       		.byte	0x2
+ 201 0071 A2       		.byte	0xa2
+ 202 0072 3A000000 		.4byte	0x3a
+ 203 0076 04       		.uleb128 0x4
+ 204 0077 0E000000 		.4byte	.LASF10
+ 205 007b 02       		.byte	0x2
+ 206 007c A3       		.byte	0xa3
+ 207 007d 48000000 		.4byte	0x48
+ 208 0081 02       		.uleb128 0x2
+ 209 0082 04       		.byte	0x4
+ 210 0083 04       		.byte	0x4
+ 211 0084 85010000 		.4byte	.LASF11
+ 212 0088 02       		.uleb128 0x2
+ 213 0089 08       		.byte	0x8
+ 214 008a 04       		.byte	0x4
+ 215 008b 5F010000 		.4byte	.LASF12
+ 216 008f 02       		.uleb128 0x2
+ 217 0090 01       		.byte	0x1
+ 218 0091 08       		.byte	0x8
+ 219 0092 47010000 		.4byte	.LASF13
+ 220 0096 02       		.uleb128 0x2
+ 221 0097 04       		.byte	0x4
+ 222 0098 07       		.byte	0x7
+ 223 0099 B1010000 		.4byte	.LASF14
+ 224 009d 05       		.uleb128 0x5
+ 225 009e 30000000 		.4byte	.LASF15
+ 226 00a2 01       		.byte	0x1
+ 227 00a3 30       		.byte	0x30
+ARM GAS  C:\Users\gsgill\AppData\Local\Temp\ccTK1PDq.s 			page 7
+
+
+ 228 00a4 5D000000 		.4byte	0x5d
+ 229 00a8 00000000 		.4byte	.LFB33
+ 230 00ac 32000000 		.4byte	.LFE33-.LFB33
+ 231 00b0 01       		.uleb128 0x1
+ 232 00b1 9C       		.byte	0x9c
+ 233 00b2 06       		.uleb128 0x6
+ 234 00b3 9B010000 		.4byte	.LASF16
+ 235 00b7 01       		.byte	0x1
+ 236 00b8 5E       		.byte	0x5e
+ 237 00b9 00000000 		.4byte	.LFB34
+ 238 00bd 5C000000 		.4byte	.LFE34-.LFB34
+ 239 00c1 01       		.uleb128 0x1
+ 240 00c2 9C       		.byte	0x9c
+ 241 00c3 07       		.uleb128 0x7
+ 242 00c4 29000000 		.4byte	.LASF17
+ 243 00c8 01       		.byte	0x1
+ 244 00c9 1E       		.byte	0x1e
+ 245 00ca 6B000000 		.4byte	0x6b
+ 246 00ce 05       		.uleb128 0x5
+ 247 00cf 03       		.byte	0x3
+ 248 00d0 00000000 		.4byte	curPos
+ 249 00d4 07       		.uleb128 0x7
+ 250 00d5 22000000 		.4byte	.LASF18
+ 251 00d9 01       		.byte	0x1
+ 252 00da 1E       		.byte	0x1e
+ 253 00db 6B000000 		.4byte	0x6b
+ 254 00df 05       		.uleb128 0x5
+ 255 00e0 03       		.byte	0x3
+ 256 00e1 00000000 		.4byte	oldPos
+ 257 00e5 00       		.byte	0
+ 258              		.section	.debug_abbrev,"",%progbits
+ 259              	.Ldebug_abbrev0:
+ 260 0000 01       		.uleb128 0x1
+ 261 0001 11       		.uleb128 0x11
+ 262 0002 01       		.byte	0x1
+ 263 0003 25       		.uleb128 0x25
+ 264 0004 0E       		.uleb128 0xe
+ 265 0005 13       		.uleb128 0x13
+ 266 0006 0B       		.uleb128 0xb
+ 267 0007 03       		.uleb128 0x3
+ 268 0008 0E       		.uleb128 0xe
+ 269 0009 1B       		.uleb128 0x1b
+ 270 000a 0E       		.uleb128 0xe
+ 271 000b 55       		.uleb128 0x55
+ 272 000c 17       		.uleb128 0x17
+ 273 000d 11       		.uleb128 0x11
+ 274 000e 01       		.uleb128 0x1
+ 275 000f 10       		.uleb128 0x10
+ 276 0010 17       		.uleb128 0x17
+ 277 0011 00       		.byte	0
+ 278 0012 00       		.byte	0
+ 279 0013 02       		.uleb128 0x2
+ 280 0014 24       		.uleb128 0x24
+ 281 0015 00       		.byte	0
+ 282 0016 0B       		.uleb128 0xb
+ 283 0017 0B       		.uleb128 0xb
+ 284 0018 3E       		.uleb128 0x3e
+ARM GAS  C:\Users\gsgill\AppData\Local\Temp\ccTK1PDq.s 			page 8
+
+
+ 285 0019 0B       		.uleb128 0xb
+ 286 001a 03       		.uleb128 0x3
+ 287 001b 0E       		.uleb128 0xe
+ 288 001c 00       		.byte	0
+ 289 001d 00       		.byte	0
+ 290 001e 03       		.uleb128 0x3
+ 291 001f 24       		.uleb128 0x24
+ 292 0020 00       		.byte	0
+ 293 0021 0B       		.uleb128 0xb
+ 294 0022 0B       		.uleb128 0xb
+ 295 0023 3E       		.uleb128 0x3e
+ 296 0024 0B       		.uleb128 0xb
+ 297 0025 03       		.uleb128 0x3
+ 298 0026 08       		.uleb128 0x8
+ 299 0027 00       		.byte	0
+ 300 0028 00       		.byte	0
+ 301 0029 04       		.uleb128 0x4
+ 302 002a 16       		.uleb128 0x16
+ 303 002b 00       		.byte	0
+ 304 002c 03       		.uleb128 0x3
+ 305 002d 0E       		.uleb128 0xe
+ 306 002e 3A       		.uleb128 0x3a
+ 307 002f 0B       		.uleb128 0xb
+ 308 0030 3B       		.uleb128 0x3b
+ 309 0031 0B       		.uleb128 0xb
+ 310 0032 49       		.uleb128 0x49
+ 311 0033 13       		.uleb128 0x13
+ 312 0034 00       		.byte	0
+ 313 0035 00       		.byte	0
+ 314 0036 05       		.uleb128 0x5
+ 315 0037 2E       		.uleb128 0x2e
+ 316 0038 00       		.byte	0
+ 317 0039 3F       		.uleb128 0x3f
+ 318 003a 19       		.uleb128 0x19
+ 319 003b 03       		.uleb128 0x3
+ 320 003c 0E       		.uleb128 0xe
+ 321 003d 3A       		.uleb128 0x3a
+ 322 003e 0B       		.uleb128 0xb
+ 323 003f 3B       		.uleb128 0x3b
+ 324 0040 0B       		.uleb128 0xb
+ 325 0041 49       		.uleb128 0x49
+ 326 0042 13       		.uleb128 0x13
+ 327 0043 11       		.uleb128 0x11
+ 328 0044 01       		.uleb128 0x1
+ 329 0045 12       		.uleb128 0x12
+ 330 0046 06       		.uleb128 0x6
+ 331 0047 40       		.uleb128 0x40
+ 332 0048 18       		.uleb128 0x18
+ 333 0049 9642     		.uleb128 0x2116
+ 334 004b 19       		.uleb128 0x19
+ 335 004c 00       		.byte	0
+ 336 004d 00       		.byte	0
+ 337 004e 06       		.uleb128 0x6
+ 338 004f 2E       		.uleb128 0x2e
+ 339 0050 00       		.byte	0
+ 340 0051 3F       		.uleb128 0x3f
+ 341 0052 19       		.uleb128 0x19
+ARM GAS  C:\Users\gsgill\AppData\Local\Temp\ccTK1PDq.s 			page 9
+
+
+ 342 0053 03       		.uleb128 0x3
+ 343 0054 0E       		.uleb128 0xe
+ 344 0055 3A       		.uleb128 0x3a
+ 345 0056 0B       		.uleb128 0xb
+ 346 0057 3B       		.uleb128 0x3b
+ 347 0058 0B       		.uleb128 0xb
+ 348 0059 27       		.uleb128 0x27
+ 349 005a 19       		.uleb128 0x19
+ 350 005b 11       		.uleb128 0x11
+ 351 005c 01       		.uleb128 0x1
+ 352 005d 12       		.uleb128 0x12
+ 353 005e 06       		.uleb128 0x6
+ 354 005f 40       		.uleb128 0x40
+ 355 0060 18       		.uleb128 0x18
+ 356 0061 9642     		.uleb128 0x2116
+ 357 0063 19       		.uleb128 0x19
+ 358 0064 00       		.byte	0
+ 359 0065 00       		.byte	0
+ 360 0066 07       		.uleb128 0x7
+ 361 0067 34       		.uleb128 0x34
+ 362 0068 00       		.byte	0
+ 363 0069 03       		.uleb128 0x3
+ 364 006a 0E       		.uleb128 0xe
+ 365 006b 3A       		.uleb128 0x3a
+ 366 006c 0B       		.uleb128 0xb
+ 367 006d 3B       		.uleb128 0x3b
+ 368 006e 0B       		.uleb128 0xb
+ 369 006f 49       		.uleb128 0x49
+ 370 0070 13       		.uleb128 0x13
+ 371 0071 3F       		.uleb128 0x3f
+ 372 0072 19       		.uleb128 0x19
+ 373 0073 02       		.uleb128 0x2
+ 374 0074 18       		.uleb128 0x18
+ 375 0075 00       		.byte	0
+ 376 0076 00       		.byte	0
+ 377 0077 00       		.byte	0
+ 378              		.section	.debug_aranges,"",%progbits
+ 379 0000 24000000 		.4byte	0x24
+ 380 0004 0200     		.2byte	0x2
+ 381 0006 00000000 		.4byte	.Ldebug_info0
+ 382 000a 04       		.byte	0x4
+ 383 000b 00       		.byte	0
+ 384 000c 0000     		.2byte	0
+ 385 000e 0000     		.2byte	0
+ 386 0010 00000000 		.4byte	.LFB33
+ 387 0014 32000000 		.4byte	.LFE33-.LFB33
+ 388 0018 00000000 		.4byte	.LFB34
+ 389 001c 5C000000 		.4byte	.LFE34-.LFB34
+ 390 0020 00000000 		.4byte	0
+ 391 0024 00000000 		.4byte	0
+ 392              		.section	.debug_ranges,"",%progbits
+ 393              	.Ldebug_ranges0:
+ 394 0000 00000000 		.4byte	.LFB33
+ 395 0004 32000000 		.4byte	.LFE33
+ 396 0008 00000000 		.4byte	.LFB34
+ 397 000c 5C000000 		.4byte	.LFE34
+ 398 0010 00000000 		.4byte	0
+ARM GAS  C:\Users\gsgill\AppData\Local\Temp\ccTK1PDq.s 			page 10
+
+
+ 399 0014 00000000 		.4byte	0
+ 400              		.section	.debug_line,"",%progbits
+ 401              	.Ldebug_line0:
+ 402 0000 83000000 		.section	.debug_str,"MS",%progbits,1
+ 402      02004500 
+ 402      00000201 
+ 402      FB0E0D00 
+ 402      01010101 
+ 403              	.LASF6:
+ 404 0000 6C6F6E67 		.ascii	"long long int\000"
+ 404      206C6F6E 
+ 404      6720696E 
+ 404      7400
+ 405              	.LASF10:
+ 406 000e 75696E74 		.ascii	"uint32\000"
+ 406      333200
+ 407              	.LASF8:
+ 408 0015 756E7369 		.ascii	"unsigned int\000"
+ 408      676E6564 
+ 408      20696E74 
+ 408      00
+ 409              	.LASF18:
+ 410 0022 6F6C6450 		.ascii	"oldPos\000"
+ 410      6F7300
+ 411              	.LASF17:
+ 412 0029 63757250 		.ascii	"curPos\000"
+ 412      6F7300
+ 413              	.LASF15:
+ 414 0030 6D61696E 		.ascii	"main\000"
+ 414      00
+ 415              	.LASF5:
+ 416 0035 6C6F6E67 		.ascii	"long unsigned int\000"
+ 416      20756E73 
+ 416      69676E65 
+ 416      6420696E 
+ 416      7400
+ 417              	.LASF7:
+ 418 0047 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 418      206C6F6E 
+ 418      6720756E 
+ 418      7369676E 
+ 418      65642069 
+ 419              	.LASF21:
+ 420 005e 433A5C55 		.ascii	"C:\\Users\\gsgill\\Documents\\PSoC Creator\\CapSens"
+ 420      73657273 
+ 420      5C677367 
+ 420      696C6C5C 
+ 420      446F6375 
+ 421 008c 655F4353 		.ascii	"e_CSD_P4_Design03\\CapSense_CSD_P4_Design03.cydsn\000"
+ 421      445F5034 
+ 421      5F446573 
+ 421      69676E30 
+ 421      335C4361 
+ 422              	.LASF19:
+ 423 00bd 474E5520 		.ascii	"GNU C 4.8.4 20140526 (release) [ARM/embedded-4_8-br"
+ 423      4320342E 
+ 423      382E3420 
+ARM GAS  C:\Users\gsgill\AppData\Local\Temp\ccTK1PDq.s 			page 11
+
+
+ 423      32303134 
+ 423      30353236 
+ 424 00f0 616E6368 		.ascii	"anch revision 211358] -mcpu=cortex-m0 -mthumb -g -O"
+ 424      20726576 
+ 424      6973696F 
+ 424      6E203231 
+ 424      31333538 
+ 425 0123 30202D66 		.ascii	"0 -ffunction-sections\000"
+ 425      66756E63 
+ 425      74696F6E 
+ 425      2D736563 
+ 425      74696F6E 
+ 426              	.LASF1:
+ 427 0139 756E7369 		.ascii	"unsigned char\000"
+ 427      676E6564 
+ 427      20636861 
+ 427      7200
+ 428              	.LASF13:
+ 429 0147 63686172 		.ascii	"char\000"
+ 429      00
+ 430              	.LASF4:
+ 431 014c 6C6F6E67 		.ascii	"long int\000"
+ 431      20696E74 
+ 431      00
+ 432              	.LASF2:
+ 433 0155 73686F72 		.ascii	"short int\000"
+ 433      7420696E 
+ 433      7400
+ 434              	.LASF12:
+ 435 015f 646F7562 		.ascii	"double\000"
+ 435      6C6500
+ 436              	.LASF3:
+ 437 0166 73686F72 		.ascii	"short unsigned int\000"
+ 437      7420756E 
+ 437      7369676E 
+ 437      65642069 
+ 437      6E7400
+ 438              	.LASF0:
+ 439 0179 7369676E 		.ascii	"signed char\000"
+ 439      65642063 
+ 439      68617200 
+ 440              	.LASF11:
+ 441 0185 666C6F61 		.ascii	"float\000"
+ 441      7400
+ 442              	.LASF20:
+ 443 018b 2E5C6D61 		.ascii	".\\main.c\000"
+ 443      696E2E63 
+ 443      00
+ 444              	.LASF9:
+ 445 0194 75696E74 		.ascii	"uint16\000"
+ 445      313600
+ 446              	.LASF16:
+ 447 019b 43617053 		.ascii	"CapSense_DisplayState\000"
+ 447      656E7365 
+ 447      5F446973 
+ 447      706C6179 
+ 447      53746174 
+ARM GAS  C:\Users\gsgill\AppData\Local\Temp\ccTK1PDq.s 			page 12
+
+
+ 448              	.LASF14:
+ 449 01b1 73697A65 		.ascii	"sizetype\000"
+ 449      74797065 
+ 449      00
+ 450              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.8.4 20140526 (release) [ARM/embedded-4_8-br
